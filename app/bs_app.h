@@ -4,12 +4,15 @@
 #define APP_BS_APP_H_
 
 #include "can_master.h"
+#include "switch.h"
+#include "io_control.h"
 #include "board.h"
 #include "app_config.h"
 #include "bat_port.h"
 #include "adc_sensor.h"
 #include "delay.h"
 #include "app_update.h"
+#include "io_control.h"
 #include "app_co_init.h"
 #include "app_co_comm_od.h"
 #include "app_co_manu_od.h"
@@ -105,7 +108,7 @@ struct BS_app_t{
 	bool		is_request_upgrade;
 	uint16_t	pmu_error;
 	uint32_t	bootState_timeout;
-
+	IOC 		ioc;
 
 };
 
@@ -129,7 +132,6 @@ void bs_app_update_first_working_port				(pmu_app*);
 void pmu_app_check_connected_port_state				(pmu_app*);
 void pmu_app_verify_BP_valid						(pmu_app*);
 void bs_app_reset_to_idle_state						(pmu_app*);
-void bs_app_set_sleep_state							(pmu_app* p_app);
 void bs_app_update_charger_state					(pmu_app*);
 void pmu_app_update_bp_oparetion_mode				(pmu_app* );
 void pmu_app_update_sleep_mode						(pmu_app* );

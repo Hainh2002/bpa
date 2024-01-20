@@ -34,18 +34,9 @@ struct Switch_t{
 
 Switch* sw_construct(void);
 void 	sw_init(Switch* p_sw);
-void parking_init(Switch* p_sw);
 
 void sw_update_input_state(Switch*);
-void sw_update_key_input_state(Switch*);
 void sw_update_output_state(Switch* p_sw);
-void sw_update_motor_lock_output_state(Switch* p_sw);
-void sw_update_blink_state(Switch* p_sw, uint32_t timestamp);
-void sw_update_motor_lock_on_warning(Switch* p_sw);
-void sw_update_motor_lock_off_warning(Switch* p_sw,uint32_t timestamp);
-void motor_lock_end_of_warning(Switch* p_sw);
-
-
 
 static inline void sw_on(Switch* p_sw){
 	if(p_sw->sw_on == NULL) return;

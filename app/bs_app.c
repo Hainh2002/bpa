@@ -8,6 +8,7 @@
 #include "bs_app.h"
 #include "app_bat_port.h"
 #include "app_co.h"
+#include "app_io.h"
 
 /* Use for check_current_condition when process BP_Switch */
 static uint32_t	check_current_switch_time = 0;
@@ -83,10 +84,10 @@ void hardware_init(void){
 	board_init();
 }
 void app_init(pmu_app* p_app){
+	app_io_init(p_app);
 	app_bat_ports_init(p_app);
 	app_co_master_init(p_app);
 	app_co_init();
-
 }
 
 void pmu_app_update_bp_oparetion_mode(pmu_app* p_app){
@@ -190,14 +191,6 @@ void bs_app_reset_to_idle_state(pmu_app* p_app){
 	app_co_master_init(p_app);
 	can_master_reconfig_node_id_num(&p_app->base);
 }
-void bs_app_set_sleep_state(pmu_app* p_app){
-	p_app->state = PMU_ST_SLEEP;
-	app_bat_ports_init(p_app);
-	app_estimate_init(p_app);
-	app_co_init1(p_app);
-	can_master_reconfig_node_id_num(&p_app->base);
-}
-
 
 void bs_app_update_distance_available(pmu_app* p_app, const uint32_t timestamp){
 	if(update_distance_timestamp >= timestamp) return;
@@ -211,40 +204,6 @@ void bs_app_update_distance_available(pmu_app* p_app, const uint32_t timestamp){
 	p_app->distance_available = total_distance;
 	update_distance_timestamp = timestamp + UPDATE_DISTANCE_TIME_mS;
 	p_app->is_ready_stream_distance = true;
-}
-
-/* Send BP Serial Number to HMI, per SN is divided 2 parts: 8-bytes upper and 8-bytes lower
- 	   /Request read BP SN 	- Address: 0x90
-   	   /8 bytes lower 		- Address: 0x200 + node_id;
-   	   /8 bytes upper 		- Address: 0x300 + node_id;
- * Send BP SN part per 10ms (1tick) */
-void bs_app_stream_bp_sn(pmu_app* p_app){
-	bs_app_package_bp_sn(p_app);
-}
-
-static void bs_app_package_bp_sn(pmu_app* p_app){
-	if(sn_part == 0){
-		sn_part++;
-		CO_memcpy(p_app->base.p_hw->tx_data_pdo, p_app->ports[id].bp->base.sn, 8);
-
-	}
-	else{
-		sn_part--;
-		CO_memcpy(p_app->base.p_hw->tx_data, p_app->ports[id].bp->base.sn + 8, 8);
-
-		id++;
-		if(id == p_app->bat_port_num){
-			p_app->is_read_sn_request = false;
-			id = 0;
-		}
-	}
-	p_app->base.p_hw->can_tx.DLC = 8;
-}
-
-void bs_app_stream_error_code(pmu_app* p_app){
-	//Package message
-	can_send(p_app->base.p_hw, p_app->base.p_hw->tx_data);
-	p_app->is_bp_disconnect = 0;
 }
 
 /* ---------------------------------------------------------------------------------- */

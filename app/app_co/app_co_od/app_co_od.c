@@ -189,20 +189,7 @@ static CO_Sub_Object_Ext_Confirm_Func_t upgrade_fw_set_state_Confirm_Func(void){
 		CO_disable_sync_mode(&selex_bs_app.base.co_app);
 		return CO_EXT_CONFIRM_success;
 	}
-	/* upgrade BP*/
-	if(		data_state == 5||
-			data_state == 6||
-			data_state == 7){
-
-		bs_app_remove_working_port(&selex_bs_app, data_state - 4);
-		selex_bs_app.bootState_timeout = 0;
-		bs_app_set_state(&selex_bs_app, PMU_ST_BOOT);
-		CO_disable_sync_mode(&selex_bs_app.base.co_app);
-		return CO_EXT_CONFIRM_success;
-
-	}
-
-	return CO_EXT_CONFIRM_success;
+	return CO_EXT_CONFIRM_abort;
 }
 CO_Sub_Object_Ext_t upgrade_fw_set_state_ext = {
 		.p_shadow_data = ota_command,

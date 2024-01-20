@@ -70,32 +70,32 @@ static void	check_working_port(pmu_app* p_app){
 
 static void bat1_on(Switch* p_sw){
 	p_sw->state = SW_ST_ON;
-	HAL_NODE_ID_SET_HIGH(NodeID1);
+	HAL_NODE_ID_SET_HIGH(NODEID_1);
 }
 
 static void bat2_on(Switch* p_sw){
 	p_sw->state = SW_ST_ON;
-	HAL_NODE_ID_SET_HIGH(NodeID2);
+	HAL_NODE_ID_SET_HIGH(NODEID_2);
 }
 
 static void bat3_on(Switch* p_sw){
 	p_sw->state = SW_ST_ON;
-	HAL_NODE_ID_SET_HIGH(NodeID3);
+	HAL_NODE_ID_SET_HIGH(NODEID_3);
 }
 
 static void bat1_off(Switch* p_sw){
 	p_sw->state = SW_ST_OFF;
-	HAL_NODE_ID_SET_LOW(NodeID1);
+	HAL_NODE_ID_SET_LOW(NODEID_1);
 }
 
 static void bat2_off(Switch* p_sw){
 	p_sw->state = SW_ST_OFF;
-	HAL_NODE_ID_SET_LOW(NodeID2);
+	HAL_NODE_ID_SET_LOW(NODEID_2);
 }
 
 static void bat3_off(Switch* p_sw){
 	p_sw->state = SW_ST_OFF;
-	HAL_NODE_ID_SET_LOW(NodeID3);
+	HAL_NODE_ID_SET_LOW(NODEID_3);
 }
 
 static void bat_port_set_power_sw_handle(Bat_port* p_port, BMS_SWICTH_STATE sw_state, CM_CO_SERVICE co_service){

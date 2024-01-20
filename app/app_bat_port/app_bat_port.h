@@ -14,6 +14,5 @@ void app_bat_ports_init(pmu_app*);
 void app_estimate_init(pmu_app* p_app);
 void cal_max_cur_dc_bus(pmu_app* );
 void cal_power(Bat_port* port, float delta_t );
-void estimate_distance(pmu_app* );
 
 #endif /* APP_APP_BAT_PORT_APP_BAT_PORT_H_ */

@@ -21,10 +21,10 @@ void io_hw_init(void);
 #define NODE_ID_SET_LOW(x)		R_IOPORT_PinWrite(&g_ioport_ctrl, x, 0)
 typedef enum {
 	CAN_MODE			 = IOPORT_PORT_01_PIN_04,
-	NodeID1			 	 = IOPORT_PORT_00_PIN_02,
-	NodeID2				 = IOPORT_PORT_00_PIN_01,
-	NodeID3			 	 = IOPORT_PORT_00_PIN_00,
-
+	NODEID_1		 	 = IOPORT_PORT_00_PIN_02,
+	NODEID_2			 = IOPORT_PORT_00_PIN_01,
+	NODEID_3		 	 = IOPORT_PORT_00_PIN_00,
+	MC_POWER			 = IOPORT_PORT_00_PIN_00,
 }IO_BS;
 
 

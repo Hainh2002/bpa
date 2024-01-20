@@ -1,10 +1,3 @@
-/*
-z * main.c
- *
- *  Created on: Aug 24, 2021
- *      Author: KhanhDinh
- */
-
 #include "bs_app.h"
 #include "app_bat_port.h"
 #include "app_co.h"
@@ -46,6 +39,8 @@ void manage_bp_timer_irq_handle(void){
 	sys_timestamp += sys_tick_ms;
 	pdo_data_processing(&selex_bs_app);
 	CO_SDO_Client_reset_timeout((CAN_master*)&selex_bs_app);
+
+	ioc_process(&selex_bs_app.ioc, sys_timestamp, (uint8_t)selex_bs_app.mode);
 
 	switch(selex_bs_app.state){
 	case PMU_ST_SETUP:

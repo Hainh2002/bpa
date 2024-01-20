@@ -26,12 +26,12 @@
 
 /* Version */
 #define HW_VERSION			0x00000000	//<< option
-#define SW_VERSION			0x00010007	//<< option
+#define SW_VERSION			0x00010000	//<< option
 
-#define FRIMWARE_NAME		"SELEX_PMU_MAINAPP"
+#define FRIMWARE_NAME		"BPA_MAINAPP"
 
 /* */
-#define CO_CF_1008_DEVICE_NAME	"SELEX_PMU"
+#define CO_CF_1008_DEVICE_NAME	"BPA"
 #define CO_CF_1008_DEVICE_NAME_SIZE		(sizeof(CO_CF_1008_DEVICE_NAME))
 
 /* Synchronous schedule */

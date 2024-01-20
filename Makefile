@@ -12,6 +12,7 @@ include $(PROJ_ROOT)/gcc.mk
 SRCS:=board/$(BOARD_TYPE)/board.c
 SRCS+= app/app_co/app_co.c \
 	app/app_bat_port/app_bat_port.c \
+	app/app_io/app_io.c \
 	app/bs_app.c \
 	app/app_co/app_co_init/app_co_init.c \
 	app/app_co/app_co_od/app_co_od.c \
@@ -21,6 +22,7 @@ SRCS+= app/app_co/app_co.c \
 
 SRCS+= component/switch/switch.c \
 	component/bat_port/bat_port.c \
+	component/io_control/io_control.c \
 	component/bp_data/bp_data.c \
 	component/adc_sensor/adc_sensor.c \
 	
