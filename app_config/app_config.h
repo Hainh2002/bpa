@@ -9,7 +9,6 @@
 #define APP_CONFIG_APP_CONFIG_H_
 #include "core_hal.h"
 
-#define USE_KEY											1
 
 /* Timeout Parameters */
 #define APP_STATE_MACHINE_UPDATE_TICK_mS                (1000/HAL_SYSTICK_FREQ_Hz)

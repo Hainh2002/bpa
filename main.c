@@ -6,18 +6,14 @@ z * main.c
  */
 
 #include "bs_app.h"
-//#include "app_io.h"
 #include "app_bat_port.h"
 #include "app_co.h"
 #include "delay.h"
 
 pmu_app 			selex_bs_app;
-static uint64_t 	sync_timestamp = 0;
 const uint32_t 		sys_tick_ms = 10;
 volatile uint64_t 	sys_timestamp = 0;
-uint8_t* 			buffer;
 
-static void ioc_timer_irq_handle(void);
 static void manage_bp_timer_irq_handle(void);
 static void co_sync_process_timer_irq_handle(void);
 
@@ -79,8 +75,6 @@ void manage_bp_timer_irq_handle(void){
 	default:
 		break;
 	}
-	/*data sync */
-	sync_timestamp += sys_tick_ms;
 }
 static bool sync_was = false;
 static bool sync_was_last;

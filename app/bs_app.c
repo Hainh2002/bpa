@@ -8,18 +8,10 @@
 #include "bs_app.h"
 #include "app_bat_port.h"
 #include "app_co.h"
-//#include "app_io.h"
-//#include "buck_converter.h"
-/* Use for update_distance available */
-uint64_t 		update_distance_timestamp = UPDATE_DISTANCE_TIME_INTERVAL_mS;
-
-
 
 /* Use for check_current_condition when process BP_Switch */
 static uint32_t	check_current_switch_time = 0;
-
 static uint32_t	wait_for_stable_charging = 0;
-
 
 bool is_current_enable_switch;
 static inline bool 	bs_app_check_current_enable_switch(pmu_app* );
@@ -91,100 +83,15 @@ void hardware_init(void){
 	board_init();
 }
 void app_init(pmu_app* p_app){
-//	app_io_init(p_app);
-	update_device_infor(p_app);
 	app_bat_ports_init(p_app);
-//	app_estimate_init(p_app);
-	app_co_init1(p_app);
+	app_co_master_init(p_app);
 	app_co_init();
-//	app_update_init(p_app->app_update);
-//	ev_protect_init(p_app);
-//	p_app->app_update = &app_update_ser;
-}
-static void 	update_device_infor(pmu_app* p_app){
 
-//	memcpy((uint8_t*)&p_app->pmu_infor, (uint8_t*)EV_ID_MEM_ADDR , 32);
-
-}
-/* Read the vehicle's serial number from hmi
- *Reading will finish until successful
- *If reading fail more than 100 times, pmu error message "cannot read device code"*/
-void get_sn_device_from_hmi(pmu_app* p_app){
-#if BP_VERIFY_MODE
-	CAN_master *p_cm = &p_app->base;
-	bool get_success = false;
-	uint16_t number_reads = 0;
-	while(!get_success){
-		if(number_reads == 100){
-			p_app->pmu_error = 401;
-		}
-		/* setup to send sdo*/
-		if(CO_SDO_get_status(&p_cm->co_app.sdo_client) == CO_SDO_RT_idle){
-			co_sdo_read_object(p_cm, 0x220000,
-					8, (uint8_t *)p_app->vehicle_sn,100);
-			number_reads++;
-		}
-		/* get success*/
-		else if(CO_SDO_get_status(&p_cm->co_app.sdo_client) == CO_SDO_RT_success){
-			CO_SDO_reset_status(&p_cm->co_app.sdo_client);
-			if((strlen(p_app->vehicle_sn) >= 5) && strlen(p_app->vehicle_sn) < 13){
-				get_success = true;
-				p_app->state = BS_ST_SETUP;
-				p_app->pmu_error = 0;
-			}}
-
-		else if(CO_SDO_get_status(&p_cm->co_app.sdo_client) == CO_SDO_RT_abort){
-			CO_SDO_reset_status(&p_cm->co_app.sdo_client);
-			delay(200,BSP_DELAY_UNITS_MILLISECONDS);
-		}
-	}
-
-	CO_SDO_reset_status(&p_cm->co_app.sdo_client);
-#endif
 }
 
 void pmu_app_update_bp_oparetion_mode(pmu_app* p_app){
-	bs_app_update_bp_switch_state(p_app);
 	p_app->mode = BP_DISCHARGE;
-}
-void pmu_app_update_sleep_mode(pmu_app* p_app){
-
-}
-static inline void bs_app_check_enable_Charge_mode(pmu_app* p_app){
-
-}
-
-static inline void bs_app_check_enable_Discharge_mode(pmu_app* p_app){
-
-}
-
-
-/* Check the validity of the BP
- * If no BP matches then set is_power_sys_block to true. When is_power_sys_block set to true, MC is not powered*/
-void pmu_app_verify_BP_valid(pmu_app* p_app){
-#if BP_VERIFY_MODE
-	for(uint8_t i = 0; i < p_app->bat_port_num; i++){
-		if(p_app->ports[i].bp->valid_st != NO_CHECK) continue;
-		if(p_app->ports[i].bp->base.con_state != CO_SLAVE_CON_ST_CONNECTED) continue;
-		if(string_cmp((char *)p_app->ports[i].bp->base.vehicle_sn,(char *)p_app->vehicle_sn,3) == 1){
-			p_app->ports[i].bp->valid_st = VALID;
-		}
-		else{
-			p_app->ports[i].bp->valid_st = INVALID;
-		}
-	}
-	p_app->is_power_sys_block = bs_app_verify_power_sys_valid(p_app);
-	bs_app_buffer_bp_state_valid(p_app);
-#endif
-}
-static bool bs_app_verify_power_sys_valid(pmu_app* p_app){
-	for(uint8_t i = 0; i < p_app->bat_port_num; i++){
-		if(p_app->ports[i].bp->valid_st == VALID){
-			return false;
-		}
-	}
-	return true;
-
+	bs_app_update_bp_switch_state(p_app);
 }
 
 bool string_cmp(char const str1[], char const str2[], uint32_t lenght){
@@ -220,9 +127,7 @@ void pmu_app_check_connected_port_state(pmu_app* p_app){
 		bs_app_remove_working_port(p_app, i);
 		p_app->ports[i].bp->base.recovery_time_ms = 1;
 	}
-	/* Remove invalid of BP
-	 * if there no ABP then after 20s turn off BP
-	 * if it is, then turn off immediately*/
+
 	for(uint8_t i = 0; i < p_app->bat_port_num; i++){
 		if(p_app->ports[i].bp->state == BP_ST_DISCHARGING
 				&& p_app->mode != BP_CHARGE
@@ -282,8 +187,7 @@ void pmu_app_check_connected_port_state(pmu_app* p_app){
 void bs_app_reset_to_idle_state(pmu_app* p_app){
 	p_app->state = PMU_ST_IDLE;
 	app_bat_ports_init(p_app);
-//	app_estimate_init(p_app);
-	app_co_init1(p_app);
+	app_co_master_init(p_app);
 	can_master_reconfig_node_id_num(&p_app->base);
 }
 void bs_app_set_sleep_state(pmu_app* p_app){
@@ -442,7 +346,6 @@ void pmu_switch_update_timeout(pmu_app* p_app, uint64_t timestamp){
 		break;
 	}
 	p_app->sw_timeout = timestamp + timeout;
-	//p_boot->timeout = timestamp + timeout;
 }
 
 /* ON next_working_port, merge power with current working_port */
@@ -824,7 +727,6 @@ void bs_app_update_switch_type_discharge(pmu_app* p_app){
 			&& (diff_voltage <= UPPER_MERGE_VOL_DIFF_DISCHARGE_mV)){
 		if(noise_filter_cnt ++ > CNT_100){
 			bs_app_set_sw_process_state(p_app, BS_MERGE_SWITCH);
-			//p_app->sw_type = BS_MERGE_SWITCH;
 			noise_filter_cnt = 0;
 		}
 	}
@@ -833,7 +735,6 @@ void bs_app_update_switch_type_discharge(pmu_app* p_app){
 	else if(diff_voltage > BP_SW_VOL_DIFF_LOWER_DISCHARGE_mV){
 		if(noise_filter_cnt ++ > CNT_100){
 			bs_app_set_sw_process_state(p_app, BS_PRE_SWICTH);
-			//p_app->sw_type = BS_PRE_SWICTH;
 			noise_filter_cnt = 0;
 		}
 	}
@@ -894,7 +795,6 @@ void bs_app_update_switch_type_charge(pmu_app* p_app){
 	}
 	else if(diff_voltage > BP_SW_VOL_DIFF_CHARGE_mV){
 		bs_app_set_sw_process_state(p_app, BS_FINISH_SWITCH);
-		//p_app->sw_type = BS_FINISH_SWITCH;
 	}
 }
 /* Check current condition to enable BP Switch */
@@ -1020,6 +920,7 @@ static inline bool is_pre_sw_state_completed(void){
 uint64_t blink_time = 0;
 
 void sys_reset(pmu_app* p_app){
+	(void)p_app;
 	__NVIC_SystemReset();
 
 }

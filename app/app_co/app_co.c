@@ -22,7 +22,7 @@ static void can_master_update_pdo_handle(CAN_master*, uint64_t);
 static void on_slave_reassign_success_handle(CAN_master*, const uint64_t);
 
 
-void app_co_init1(pmu_app* p_app){
+void app_co_master_init(pmu_app* p_app){
 	can_master_init((CAN_master*)p_app, bp_slaves, p_app->bat_port_num, &can_port);
 	p_app->base.slave_start_node_id = BP_DEFAULT_NODE_ID_NUM;
 	p_app->base.sdo_server.rx_address = CO_CAN_ID_RSDO;
