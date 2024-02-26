@@ -18,9 +18,9 @@ void app_io_init(pmu_app* p_app){
 
 static void		mc_power_sw_on(Switch* p_sw){
 	(void)p_sw;
-	HAL_OUTPUT_SW_SET_HIGH(MC_POWER);
+//	HAL_OUTPUT_SW_SET_HIGH(MC_POWER);
 }
 static void		mc_power_sw_off(Switch* p_sw){
 	(void)p_sw;
-	HAL_OUTPUT_SW_SET_LOW(MC_POWER);
+//	HAL_OUTPUT_SW_SET_LOW(MC_POWER);
 }
